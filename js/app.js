@@ -6,6 +6,7 @@ const listaCursos = document.querySelector('#lista-cursos');
 let articulosCarrito = [];
 
 cargarEventListener();
+
 function cargarEventListener() {
     //Cuando agregas un curso presionando "Agregar al carrito"
     listaCursos.addEventListener('click', agregarCurso);
@@ -18,6 +19,14 @@ function cargarEventListener() {
         articulosCarrito = [];
         limpiarHTML();
     })
+
+    document.addEventListener('DOMContentLoaded', () => {
+        articulosCarrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+
+        carritoHTML();
+
+    })
 }
 
 
@@ -29,10 +38,11 @@ function agregarCurso(e) {
     if (e.target.classList.contains('agregar-carrito')) {
         const cursoSeleccionado = e.target.parentElement.parentElement;
         leerDatosCurso(cursoSeleccionado);
+
     }
 
 }
- 
+
 //elima un curso carrito
 
 function eliminarCurso(e) {
@@ -41,12 +51,13 @@ function eliminarCurso(e) {
         articulosCarrito = articulosCarrito.filter(curso => curso.id !== cursoId);
 
         carritoHTML();
+        guardarDatos();
     }
 }
 
- //lee el contenido del HTML y extrae información curso
+//lee el contenido del HTML y extrae información curso
 function leerDatosCurso(curso) {
-    
+
     //Crear objeto con el contenido del curso
 
     const infoCurso = {
@@ -68,17 +79,17 @@ function leerDatosCurso(curso) {
                 return curso; //retorna los objetos no duplicados
             }
         })
-        articulosCarrito = [...cursos];  
-    }else{
-     
-    //Agregar elementos al array de carrito
+        articulosCarrito = [...cursos];
+    } else {
+
+        //Agregar elementos al array de carrito
         articulosCarrito = [...articulosCarrito, infoCurso];
     }
-
+    guardarDatos();
     console.log(articulosCarrito);
     carritoHTML();
 }
- 
+
 
 //Muestra el carrito
 function carritoHTML() {
@@ -88,7 +99,13 @@ function carritoHTML() {
 
     //Recorre carrito y genera HTML
     articulosCarrito.forEach(curso => {
-        const { imagen, titulo, precio, cantidad, id } = curso;
+        const {
+            imagen,
+            titulo,
+            precio,
+            cantidad,
+            id
+        } = curso;
         const row = document.createElement('tr');
         row.innerHTML = `
 
@@ -125,4 +142,8 @@ function limpiarHTML() {
         contenedorCarrito.removeChild(contenedorCarrito.firstChild)
     }
 }
-    
+
+
+function guardarDatos() {
+    localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
+}
